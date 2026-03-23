@@ -7,6 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN pip install --no-cache-dir -e .
+
 RUN python -c "\
 from rtg_hybrid_rag.indexer import IndexBuilder; \
 from rtg_hybrid_rag.settings import settings; \
