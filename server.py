@@ -47,19 +47,31 @@ from rtg_hybrid_rag.settings import settings
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Singletons — built once at startup, shared across all requests
+# Singletons - built once at startup, shared across all requests
 # ---------------------------------------------------------------------------
 _recommender: RecommendationAssistant | None = None
 _agent = None  # pydantic-ai Agent[AgentDeps, str]
+_index_ready: bool = False
+
+
+def _build_index_sync() -> None:
+    global _recommender, _agent, _index_ready
+    try:
+        logger.info("Building retrieval index - this may take a few minutes on first run ...")
+        _recommender = RecommendationAssistant(settings)
+        _agent = build_agent(settings)
+        _index_ready = True
+        logger.info("Index ready. Server accepting chat requests.")
+    except Exception as exc:
+        logger.exception("Index build failed: %s", exc)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _recommender, _agent
-    logger.info("Building retrieval index — this may take a few minutes on first run …")
-    _recommender = RecommendationAssistant(settings)
-    _agent = build_agent(settings)
-    logger.info("Index ready. Server accepting requests.")
+    import threading
+    thread = threading.Thread(target=_build_index_sync, daemon=True)
+    thread.start()
+    logger.info("Server started - index building in background ...")
     yield
     logger.info("Server shutting down.")
 
@@ -286,9 +298,11 @@ async def chat(request: ChatRequest) -> StreamingResponse:
 # ---------------------------------------------------------------------------
 @app.get("/health")
 async def health() -> dict:
+    # Always return 200 so Railway healthcheck passes immediately.
+    # index_ready tells the frontend whether chat is available yet.
     return {
         "status": "ok",
-        "index_ready": _recommender is not None,
+        "index_ready": _index_ready,
         "agent_ready": _agent is not None,
     }
 
