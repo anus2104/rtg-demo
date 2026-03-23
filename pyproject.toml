@@ -1,0 +1,30 @@
+[project]
+name = "rtg-hybrid-rag"
+version = "0.1.0"
+description = "Hybrid mattress recommendation RAG over the RTG SKU workbook"
+readme = "README.md"
+authors = [
+    { name = "adityamiskin", email = "adityamiskin98@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "chromadb>=1.5.5",
+    "numpy>=2.4.3",
+    "openai>=2.29.0",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.1",
+    "pydantic>=2.12.5",
+    "pydantic-ai>=1.70.0",
+    "python-dotenv>=1.2.2",
+    "rank-bm25>=0.2.2",
+    "rich>=14.3.3",
+    "supermemory>=3.30.1",
+    "typer>=0.24.1",
+]
+
+[project.scripts]
+rtg-hybrid-rag = "rtg_hybrid_rag:main"
+
+[build-system]
+requires = ["uv_build>=0.9.24,<0.10.0"]
+build-backend = "uv_build"

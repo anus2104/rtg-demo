@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["python312", "python312Packages.pip"]
+
+[phases.install]
+cmds = [
+  "pip install -r requirements.txt",
+  "python -c \"from rtg_hybrid_rag.indexer import IndexBuilder; from rtg_hybrid_rag.settings import settings; IndexBuilder(settings).build_or_load()\""
+]
+
+[start]
+cmd = "uvicorn server:app --host 0.0.0.0 --port $PORT"
