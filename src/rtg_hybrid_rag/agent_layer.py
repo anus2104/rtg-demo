@@ -94,7 +94,7 @@ def build_agent(settings: Settings) -> Agent[AgentDeps, str]:
             "Use `save_memory` when the conversation reveals durable preferences worth keeping."
         )
 
-    @agent.tool
+    @agent.tool_plain
     def get_sales_skills(skill_names: list[str] | None = None) -> str:
         """Return structured domain guidance for common mattress-sales conversation types.
 
