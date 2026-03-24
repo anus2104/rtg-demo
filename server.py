@@ -84,7 +84,7 @@ app = FastAPI(title="RTG ShopPilot API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],       # Tighten to your Shopify domain in production
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
